@@ -47,16 +47,20 @@ def century_from_year(year):
 def century(file):
     r = re.compile("Composition Year: (.*)")
     c = []
+    counter = Counter()
     for line in file:
         m = r.match(line)
         if m is None:
             continue
         year = m.group(1).strip()
+        if "century" in year:  # 17th century
+            year = year[0:2]
+            counter[int(year)] += 1
+            continue
         year = [int(s) for s in year.split() if s.isdigit()]
         if len(year) > 0:
             c.append(year)
 
-    counter = Counter()
     for x in c:
         counter[century_from_year(x[0])] += 1
 
