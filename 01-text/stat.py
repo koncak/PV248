@@ -5,12 +5,11 @@ import operator
 
 
 def clean_name(name):
-    new_name = re.sub(re.compile(' \((.*?)\)'), "", name)  # ocisteni jmena o letopocet v zavorce
+    new_name = re.sub(re.compile(' \((.*?)\)'), "", name)
     return new_name
 
 
 def composer(file):
-    # odstranit zavorky a stredniky
     r = re.compile("Composer: (.*)")
     counter = Counter()
 
