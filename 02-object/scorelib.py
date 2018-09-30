@@ -1,4 +1,3 @@
-import re
 
 class Print:
 
@@ -8,10 +7,105 @@ class Print:
         self.partiture = partiture
 
     def format(self):
-        pass
+        print("Print Number:", self.print_id)
+
+        self.print_persons("composer")
+
+        print("Title:", end='')
+        if self.edition.composition.name:
+            print("", self.edition.composition.name)
+        else:
+            print()
+
+        print("Genre:", end='')
+        if self.edition.composition.genre:
+            print("", self.edition.composition.genre)
+        else:
+            print()
+
+        print("Key:", end='')
+        if self.edition.composition.key:
+            print("", self.edition.composition.key)
+        else:
+            print()
+
+        print("Composition Year:", end='')
+        if self.edition.composition.year:
+            print("", self.edition.composition.year)
+        else:
+            print()
+
+        print("Edition:", end='')
+        if self.edition.name:
+            print("", self.edition.name)
+        else:
+            print()
+
+        self.print_persons("editor")
+
+        voices = self.edition.composition.voices
+        if voices:
+            for i in range(len(voices)):
+                print("Voice " + str(i+1) + ": ", end='')
+                if voices[i].range:
+                    print(voices[i].range, end='')
+                    if voices[i].name:
+                        print(",", voices[i].name)
+                    else:
+                        print()
+                if not voices[i].range and voices[i].name:
+                    print(voices[i].name)
+
+        else:
+            print("Voice 1:")
+
+        print("Partiture:", "yes" if self.partiture else "no")
+
+        print("Incipit:", end='')
+        if self.edition.composition.incipit:
+            print("", self.edition.composition.incipit)
+        else:
+            print()
+
+        print()
 
     def composition(self):
-        pass
+        return self.edition.composition
+
+    def print_persons(self, type):
+        if type == "composer":
+            out_string = "Composer:"
+            authors = self.edition.composition.authors
+
+        if type == "editor":
+            out_string = "Editor:"
+            authors = self.edition.authors
+
+        if len(authors) > 0:
+            for i in range(len(authors)):
+                author = authors[i]
+                #661 (+1763)
+                if i == 0:
+                    print(out_string+" ", end='')
+                    print(author.name, end='')
+                    if author.born is not None:
+                        print(' ({}--'.format(author.born), end='')
+                        if author.died is None:
+                            print(')', end='')
+
+                    if author.died is not None:
+                        if author.born is None:
+                            print('(--', end='')
+                        print('{})'.format(author.died), end='')
+                else:
+                    print("; ", author.name, end='')
+                    if author.born is not None:
+                        print('({}--'.format(author.born), end='')
+                    if author.died is not None:
+                        print('{})'.format(author.died), end='')
+            print()
+        else:
+            print(out_string)
 
 
 class Edition:
@@ -27,17 +121,20 @@ class Edition:
 
 class Composition:
 
-    def __init__(self, name, incipit, key, genre, year, voices):
+    def __init__(self, name, incipit, key, genre, year):
         self.name = name
         self.incipit = incipit
         self.key = key
         self.genre = genre
         self.year = year
-        self.voices = voices
+        self.voices = []
         self.authors = []
 
     def add_author(self, author):
         self.authors.append(author)
+
+    def add_voice(self, voice):
+        self.voices.append(voice)
 
 
 class Voice:
@@ -45,6 +142,12 @@ class Voice:
     def __init__(self, name, range):
         self.name = name
         self.range = range
+        self.number = None
+
+    def check_range(self):
+        if self.range and self.range.count("-") == 1:
+            position = self.range.find("-")
+            self.range = self.range[:position] + "-" + self.range[position:]
 
 
 class Person:
@@ -54,29 +157,3 @@ class Person:
         self.born = born
         self.died = died
 
-
-def create_person(person_string):
-    if ';' in person_string:
-        for n in person_string.split(';'):
-            dates = re.search(r'\((.*?)\)', n.strip())
-            if dates is not None:
-                print(dates.group(1))
-
-
-def load(filename):
-    file = open(filename)
-    out = []
-
-    composer = re.compile("Composer: (.*)")
-    for line in file:
-        m = composer.match(line)
-        if m is None:
-            continue
-        name = m.group(1).strip()
-        create_person(name)
-
-
-    return out
-
-
-load('./scorelib.txt')
