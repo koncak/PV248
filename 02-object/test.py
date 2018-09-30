@@ -171,8 +171,7 @@ def load(filename):
 
 
 def main():
-    # filename = sys.argv[1]
-    filename = './scorelib.txt'
+    filename = sys.argv[1]
     prints = load(filename)
 
     prints.sort(key=lambda x: x.print_id)  # not needed
