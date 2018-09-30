@@ -84,7 +84,6 @@ class Print:
         if len(authors) > 0:
             for i in range(len(authors)):
                 author = authors[i]
-                #661 (+1763)
                 if i == 0:
                     print(out_string+" ", end='')
                     print(author.name, end='')

@@ -114,7 +114,6 @@ def create_voice(voice_string):
 
 
 def create_person(person_string):
-    #NEDORESENO +1756, *1567 ...
     p = sc.Person(None, None, None)
     o = re.match("(.*)\((.*?)\)", person_string)
     if o:
@@ -127,9 +126,14 @@ def create_person(person_string):
         else:
             born_died = re.match("(\d{4})-{1,2}(\d{4})", o.group(2))
 
+            died_plus = re.match('\+(\d{4})', o.group(2))
+
             if born_died:
                 born = int(born_died.group(1))
                 died = int(born_died.group(2))
+
+            if died_plus:
+                died = int(died_plus.group(1))
 
         p.name = o.group(1).strip()
         p.born = born
@@ -170,6 +174,8 @@ def main():
     # filename = sys.argv[1]
     filename = './scorelib.txt'
     prints = load(filename)
+
+    prints.sort(key=lambda x: x.print_id)  # not needed
 
     for print in prints:
          print.format()
