@@ -170,14 +170,9 @@ def load(filename):
     return out
 
 
-def main():
-    filename = './scorelib.txt'
+def main(filename):
     prints = load(filename)
 
     prints.sort(key=lambda x: x.print_id)  # not needed
 
-    # for print in prints:
-    #      print.format()
     return prints
-
-# main()

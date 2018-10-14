@@ -1,14 +1,14 @@
 import sqlite3
 import test
-import os
+import sys
 
 
-def store_print(cursor, print, edition_id):
+def store_print(cursor, prin, edition_id):
     partiture = "N"
-    if print.partiture:
+    if prin.partiture:
         partiture = "Y"
     cursor.execute("INSERT INTO print (id, partiture, edition) VALUES (?, ?, ?)",
-                   (print.print_id, partiture, edition_id))
+                   (prin.print_id, partiture, edition_id))
 
 
 def store_edition_author(cursor, editor_id, edition_id):
@@ -52,15 +52,16 @@ def store_author(cursor, person):
 
 
 def main():
-    qry = open('scorelib.sql', 'r').read()
-    conn = sqlite3.connect('scorelib.dat')
+    filename = sys.argv[1]
+    database = sys.argv[2]
+
+    qry = open('./scorelib.sql', 'r').read()
+    conn = sqlite3.connect(database)
+
     c = conn.cursor()
     c.executescript(qry)
 
-    c.execute("SELECT name FROM sqlite_master WHERE type='table';")
-    print(c.fetchall())
-
-    prints = test.main()  # bez posilani file
+    prints = test.main(filename)
 
     for prin in prints:
         editors = []
@@ -106,36 +107,7 @@ def main():
         store_print(c, prin, edition_id)
         conn.commit()
 
-    c = conn.cursor()
-    c.execute("SELECT * FROM person;")
-    print(len(c.fetchall()))
-
-    c = conn.cursor()
-    c.execute("SELECT * FROM score;")
-    print(len(c.fetchall()))
-
-    c = conn.cursor()
-    c.execute("SELECT * FROM voice;")
-    print(len(c.fetchall()))
-
-    c = conn.cursor()
-    c.execute("SELECT * FROM edition;")
-    print(len(c.fetchall()))
-
-    c = conn.cursor()
-    c.execute("SELECT * FROM score_author;")
-    print(len(c.fetchall()))
-
-    c = conn.cursor()
-    c.execute("SELECT * FROM edition_author;")
-    print(len(c.fetchall()))
-
-    c = conn.cursor()
-    c.execute("SELECT * FROM print;")
-    print(len(c.fetchall()))
-
     c.close()
     conn.close()
-    os.remove("scorelib.dat")
 
 main()
