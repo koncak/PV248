@@ -174,5 +174,4 @@ def main(filename):
     prints = load(filename)
 
     prints.sort(key=lambda x: x.print_id)  # not needed
-
     return prints

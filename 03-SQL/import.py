@@ -32,8 +32,14 @@ def store_voice(cursor, voice, score_id):
 
 
 def store_score(cursor, score):
-    cursor.execute("INSERT INTO score (name, genre, key, incipit, year) VALUES (?, ?, ?, ?, ?)",
+    cursor.execute("SELECT * FROM score WHERE name=? AND genre=? AND key = ? AND incipit = ? AND year = ?",
                    (score.name, score.genre, score.key, score.incipit, score.year))
+    stored = cursor.fetchone()
+    if stored is None:
+        cursor.execute("INSERT INTO score (name, genre, key, incipit, year) VALUES (?, ?, ?, ?, ?)",
+                   (score.name, score.genre, score.key, score.incipit, score.year))
+        return cursor.lastrowid
+    return stored.id
 
 
 def store_author(cursor, person):
@@ -64,8 +70,8 @@ def main():
     prints = test.main(filename)
 
     for prin in prints:
-        editors = []
 
+        editors = []
         for author in prin.edition.authors:
             c = conn.cursor()
             store_author(c, author)
@@ -80,8 +86,7 @@ def main():
             conn.commit()
 
         c = conn.cursor()
-        store_score(c, prin.edition.composition)
-        score = c.lastrowid
+        score = store_score(c, prin.edition.composition)
         conn.commit()
 
         for voice in prin.edition.composition.voices:
@@ -92,6 +97,7 @@ def main():
         c = conn.cursor()
         store_edition(c, prin.edition, score)
         edition_id = c.lastrowid
+        conn.commit()
 
         c = conn.cursor()
         for author in authors:
