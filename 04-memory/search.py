@@ -5,9 +5,7 @@ import json
 
 def main():
     conn = sqlite3.connect("./scorelib.dat")
-    #name = sys.argv[1]
-
-    name = "Haydn, Joseph"
+    name = sys.argv[1]
 
     c = conn.cursor()
     c.execute('SELECT * FROM person p WHERE p.name LIKE ? ORDER BY p.name ASC', ("%"+name+"%",))
@@ -32,7 +30,6 @@ def main():
         c.execute("select * from tracks where composer_id = ?", (author_id,))
         result = c.fetchall()
         for r in result:
-            print(r)
             out = {}
             out["Print Number"] = r[-2]
             out["Title"] = r[8]
@@ -41,7 +38,7 @@ def main():
             out["Composition year"] = r[12]
             out["Edition"] = r[2]
 
-            score_id = r[-1]  # carefull
+            score_id = r[-1]
             c = conn.cursor()
             c.execute("select * from tracks JOIN "
                       "edition_author ea ON ea.edition = edition_id JOIN"
@@ -65,15 +62,16 @@ def main():
                 editors.append(editor)
 
             out["Editor"] = editors if editors else None
-
+            c = conn.cursor()
             c.execute("select * from tracks JOIN"
-                         " voice on tracks.score_id = voice.score "
-                         "where score_id = ?",
-                         (score_id,))
+                      " voice on tracks.score_id = voice.score "
+                      "where score_id = ?",
+                      (score_id,))
 
             voices = c.fetchall()
 
             out_voices = []
+            first_voice = False
             for voice in voices:
                 voice_string = ""
 
@@ -82,7 +80,12 @@ def main():
                     voice_string += ", "
 
                 voice_string += voice[-1]
+                if voice[-4] == 1:
+                    first_voice = True
                 out_voices.append((voice[-4], voice_string))
+
+            if not first_voice:
+                out_voices.append((1, None))
 
             sorted_voices = sorted(list(set(out_voices)), key=lambda tup: tup[0])
             for out_voice in sorted_voices:
@@ -92,10 +95,9 @@ def main():
             out["Incipit"] = r[11]
             author_dict[author[-1]].append(out)
 
-            print()
-        print()
-
-        json.dump(author_dict, sys.stdout, indent=1, ensure_ascii=False)
+        json.dump(author_dict, sys.stdout, indent=4, ensure_ascii=False)
 
         c.execute("DROP VIEW tracks")
+
+
 main()
