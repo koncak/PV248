@@ -32,14 +32,18 @@ def store_voice(cursor, voice, score_id):
 
 
 def store_score(cursor, score):
-    cursor.execute("SELECT * FROM score WHERE name=? AND genre=? AND key = ? AND incipit = ? AND year = ?",
+    cursor.execute("SELECT * FROM score WHERE name=?"
+                   " AND genre=? "
+                   "AND key = ? AND "
+                   "(incipit = ? or incipit is null) AND "
+                   "(year = ? or year is null)",
                    (score.name, score.genre, score.key, score.incipit, score.year))
     stored = cursor.fetchone()
     if stored is None:
         cursor.execute("INSERT INTO score (name, genre, key, incipit, year) VALUES (?, ?, ?, ?, ?)",
-                   (score.name, score.genre, score.key, score.incipit, score.year))
+                    (score.name, score.genre, score.key, score.incipit, score.year))
         return cursor.lastrowid
-    return stored.id
+    return stored[0]
 
 
 def store_author(cursor, person):
@@ -64,8 +68,8 @@ def main():
     filename = sys.argv[1]
     database = sys.argv[2]
 
-    qry = open('./scorelib.sql', 'r').read()
     conn = sqlite3.connect(database)
+    qry = open('./scorelib.sql', 'r').read()
 
     c = conn.cursor()
     c.executescript(qry)

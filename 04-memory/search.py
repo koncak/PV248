@@ -9,7 +9,8 @@ def main():
 
     c = conn.cursor()
     c.execute('SELECT * FROM person p WHERE p.name LIKE ? ORDER BY p.name ASC', ("%"+name+"%",))
-    for author in c.fetchall():
+    authors = c.fetchall()
+    for author in authors:
         author_dict = {}
         author_dict[author[-1]] = []
         author_id = author[0]
@@ -19,7 +20,7 @@ def main():
         c.execute("create view tracks AS "
                   "select *, per.id AS composer_id, per.name AS composer_name, e.id AS edition_id,"
                   " p.id AS print_id"
-                  " ,s.id AS score_id "  # musi byt posledni
+                  " ,s.id AS score_id "
                   " from"
                   " edition e JOIN"
                   " print p ON e.id = p.edition JOIN"
@@ -29,6 +30,8 @@ def main():
 
         c.execute("select * from tracks where composer_id = ?", (author_id,))
         result = c.fetchall()
+        if not result:
+            continue
         for r in result:
             out = {}
             out["Print Number"] = r[-2]
@@ -79,7 +82,9 @@ def main():
                     voice_string += voice[-2]
                     voice_string += ", "
 
-                voice_string += voice[-1]
+                if voice[-1]:
+                    voice_string += voice[-1]
+
                 if voice[-4] == 1:
                     first_voice = True
                 out_voices.append((voice[-4], voice_string))
@@ -98,6 +103,9 @@ def main():
         json.dump(author_dict, sys.stdout, indent=4, ensure_ascii=False)
 
         c.execute("DROP VIEW tracks")
+
+    c.close()
+    conn.close()
 
 
 main()

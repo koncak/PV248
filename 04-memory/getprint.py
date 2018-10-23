@@ -29,7 +29,7 @@ def main():
 
         author_list.append(author_dict)
 
-    json.dump(author_list, sys.stdout, indent=1, ensure_ascii=False)
+    json.dump(author_list, sys.stdout, indent=4, ensure_ascii=False)
     c.close()
     conn.close()
 
