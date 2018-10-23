@@ -31,7 +31,7 @@ def store_voice(cursor, voice, score_id):
                    (voice.name, voice.range, voice.number, score_id))
 
 
-def store_score(cursor, score):  # 666,667, 694,695, 745,746
+def store_score(cursor, score):
     cursor.execute("SELECT * FROM score WHERE name=?"
                    " AND genre=? "
                    "AND key = ? AND "
@@ -41,7 +41,7 @@ def store_score(cursor, score):  # 666,667, 694,695, 745,746
     stored = cursor.fetchone()
     if stored is None:
         cursor.execute("INSERT INTO score (name, genre, key, incipit, year) VALUES (?, ?, ?, ?, ?)",
-                   (score.name, score.genre, score.key, score.incipit, score.year))
+                    (score.name, score.genre, score.key, score.incipit, score.year))
         return cursor.lastrowid
     return stored[0]
 
@@ -69,14 +69,6 @@ def main():
     database = sys.argv[2]
 
     conn = sqlite3.connect(database)
-
-    # c=conn.cursor()
-    #
-    # c.execute(
-    #     "SELECT * FROM score where name = ? and genre = ? and key = ? and (incipit = ? or incipit is null) and (year = ? or year is null)",
-    #     ('Capriccio', 'harpsichord', 'd', None, None,))
-    #
-    # print(c.fetchall())
 
     qry = open('./scorelib.sql', 'r').read()
 
