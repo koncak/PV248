@@ -4,7 +4,12 @@ import re
 
 
 def split_value(value):
-    out = re.match("(-?\d+)?([a-z])", value)  # -b ? MAYBEE
+    """
+    Splits numbers and letters to tuple 4x to (4, 'x')
+    :param value: string to be splited
+    :return: tuple
+    """
+    out = re.match("(-?\d+)?([a-z])", value)
     if out.group(1):
         return int(out.group(1)), out.group(2)
     else:
@@ -12,6 +17,11 @@ def split_value(value):
 
 
 def get_tuples(left_side):
+    """
+    Recursivly splits left side of the equation. Calls split_value on each and returns list of tuples
+    :param left_side: left side of the equation
+    :return: list of tuples
+    """
     groups = []
 
     def split_left(value):
@@ -34,6 +44,11 @@ def get_tuples(left_side):
 
 
 def get_left(left_together):
+    """
+    Fills empty places in the variable matrix for easier manipulation and returns sorted list for one left side
+    :param left_together: one left side of the equation
+    :return: list of tuples
+    """
     for i in range(len(left_together)):
         variables = set([x[1] for x in left_together[i]])
 
@@ -72,13 +87,11 @@ def main():
     for l in get_left(left_together):
         letters.append([x[1] for x in l])
         lefts.append([x[0] for x in l])
-    print(lefts)
+
     letters = letters[0]
-    print(letters)
     lefts = np.array(lefts)
 
     augumented = np.c_[lefts, rights]
-    print(augumented)
     left_rank = np.linalg.matrix_rank(lefts)
     augumented_rank = np.linalg.matrix_rank(augumented)
 
