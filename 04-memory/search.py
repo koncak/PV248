@@ -4,7 +4,7 @@ import json
 
 
 def main():
-    conn = sqlite3.connect("./scorelib.dat")
+    conn = sqlite3.connect("./scorelib.dat", uri=False)
     name = sys.argv[1]
 
     c = conn.cursor()

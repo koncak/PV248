@@ -31,10 +31,10 @@ def store_voice(cursor, voice, score_id):
                    (voice.name, voice.range, voice.number, score_id))
 
 
-def store_score(cursor, score):
+def store_score(cursor, score): #73, 76, 77
     cursor.execute("SELECT * FROM score WHERE name=?"
-                   " AND genre=? "
-                   "AND key = ? AND "
+                   " AND (genre=? or genre is null) "
+                   "AND (key = ? or key is null) AND "
                    "(incipit = ? or incipit is null) AND "
                    "(year = ? or year is null)",
                    (score.name, score.genre, score.key, score.incipit, score.year))
@@ -69,7 +69,7 @@ def main():
     database = sys.argv[2]
 
     conn = sqlite3.connect(database)
-    qry = open('./scorelib.sql', 'r').read()
+    qry = open('./scorelib.sql', 'w').read()
 
     c = conn.cursor()
     c.executescript(qry)
