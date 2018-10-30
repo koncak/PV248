@@ -9,8 +9,10 @@ def split_value(value):
     :param value: string to be splited
     :return: tuple
     """
-    out = re.match("(-?\d+)?([a-z])", value)
+    out = re.match("(-?\d*)?([a-z])", value)
     if out.group(1):
+        if "-" is out.group(1):
+            return int(-1), out.group(2)
         return int(out.group(1)), out.group(2)
     else:
         return 1, out.group(2)
@@ -71,6 +73,7 @@ def main():
     file = open(args[1])
     rights = []
     left_together = []
+
     for line in file:
         equals = re.match("(.*) = (.*)", line)
         right_side = equals.group(2)
@@ -99,7 +102,7 @@ def main():
         print("NO SOLUTION")
         return
 
-    unknowns = len(lefts[0])  # they all have same dimension
+    unknowns = len(lefts[0])  # they all have the same dimension
 
     if unknowns == left_rank:
         solution = np.linalg.solve(lefts, rights)
@@ -110,7 +113,7 @@ def main():
         print()
         return
     else:
-        print("Infinite number of solution with dimension", unknowns - left_rank)
+        print("Multiple solutions, solution space dimension:", unknowns - left_rank)
         return
 
 
