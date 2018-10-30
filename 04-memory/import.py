@@ -69,7 +69,7 @@ def main():
     database = sys.argv[2]
 
     conn = sqlite3.connect(database)
-    qry = open('./scorelib.sql', 'w').read()
+    qry = open('./scorelib.sql', 'r').read()
 
     c = conn.cursor()
     c.executescript(qry)
