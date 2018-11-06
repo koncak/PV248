@@ -25,6 +25,7 @@ def get_tuples(left_side):
     :return: list of tuples
     """
     groups = []
+    left_side = left_side.strip()
 
     def split_left(value):
         if " " not in value:
