@@ -18,6 +18,7 @@ def main():
         fmt = str(samples) + "h"
     else:
         raise ValueError("16 bit formats only.")
+        wav.close()
         return -1
 
     frame_rate = wav.getframerate()
