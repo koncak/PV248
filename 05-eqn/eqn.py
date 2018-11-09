@@ -9,6 +9,7 @@ def split_value(value):
     :param value: string to be splited
     :return: tuple
     """
+    value = value.strip()
     out = re.match("(-?\d*)?([a-z])", value)
     if out.group(1):
         if "-" is out.group(1):
@@ -26,7 +27,6 @@ def get_tuples(left_side):
     """
     groups = []
     left_side = left_side.strip()
-
     def split_left(value):
         if " " not in value:
             groups.append(value)
