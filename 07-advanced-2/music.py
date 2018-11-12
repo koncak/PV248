@@ -50,7 +50,7 @@ def find_note(frequency, base):
     return out, cents
 
 
-# print(find_note(10000, 440))
+#print(find_note(115, 440))
 
 def peak_print(range, notes):
     """
@@ -63,39 +63,34 @@ def peak_print(range, notes):
 
 def join_intervals(intervals, base):
     # DODGY SHIT
-    out = []
     # for x in intervals:
     #     notes = find_note(x[0], 440)
     #     print(str(x[1]/10)+"-"+ str((x[1]+1)/10) + notes[0]  + str(notes[1]) )
 
-    out = set([x[0] for x in intervals])
-    for o in out:
-        occurrence = [x[1] for x in intervals if x[0]==o]
-        print(occurrence)
+    unique_peaks = set([x[0] for x in intervals])
+    all_peaks = []
+    for peak in unique_peaks:
+        occurrence = [x[1] for x in intervals if x[0] == peak]
+
         for k, g in groupby(enumerate(occurrence), lambda ix: ix[0] - ix[1]):
-            neco = list(map(itemgetter(1), g))
-            print(find_note(o, 440), neco[0]/10, (neco[-1]+1)/10)
-    # out.append(intervals[0])
-    # for i in range(1, len(intervals)):
-    #
-    #     interval = intervals[i]# zatim od 1 dal
-    #     if intervals[i-1][0] == interval[0]:
-    #         index = out.index(intervals[i-1])
-    #         del out[index]
-    #         out.append(interval)
-    #     else:
-    #         out.append(interval)
-    #
-    # print(out)
+            ranges = list(map(itemgetter(1), g))
+
+            note = find_note(peak, base)
+            if note[1] < 0:
+                cents = "-"
+            else:
+                cents = "+"
+            note_out = str(note[0] + cents + str(abs(note[1])))
+            all_peaks.append((note_out, (ranges[0]/10, (ranges[-1]+1)/10)))
+    return all_peaks
 
 
+# join_intervals([(10000, 0), (10000, 1), (10000, 2), (10000, 3), (10000, 4), (10000, 5), (10000, 6), (10000, 7), (10000, 8), (10000, 9), (10000, 10), (10000, 11), (10000, 12), (10000, 13), (10000, 14), (10000, 15), (10000, 16), (10000, 17), (10000, 18), (10000, 19), (10000, 20), (9998, 20), (10003, 20)]
+# , 440)
 
-
-join_intervals([(10000, 0), (10000, 1), (10000, 2), (10000, 3), (10000, 4), (10000, 5), (10000, 6), (10000, 7), (10000, 8), (10000, 9), (10000, 10), (10000, 11), (10000, 12), (10000, 13), (10000, 14), (10000, 15), (10000, 16), (10000, 17), (10000, 18), (10000, 19), (10000, 20), (9998, 20), (10003, 20)]
-, 440)
 
 def main():
-    base = sys.argv[1]
+    base = int(sys.argv[1])
     filename = sys.argv[2]
 
     wav = wave.open(filename, 'r')
@@ -116,8 +111,6 @@ def main():
     bytes = wav.readframes(wav.getnframes())
     integers = struct.unpack(fmt, bytes)
     step = frame_rate // 10
-
-    print(len(range(0, (len(integers)-frame_rate), step)))
 
     if channels == 2:
         integers = [(a + b) / 2 for a, b in zip(integers[::2], integers[1::2])]
@@ -143,60 +136,34 @@ def main():
             #doresit, kdyz je maximum na prvnim indexu a na poslednim
 
             index = peaks.index(maximum)
-            left = peaks[index - 1]
-            right = peaks[index + 1]
+            # left = peaks[index - 1]
+            # right = peaks[index + 1]
             del peaks[index-1:index+2]
             if maximum != (-1, -1):
                 local_out.append((maximum[1],))
-        # print(local_out, position)
-        # print(position)
-        # print()
         for x in local_out:
             out.append(x+(position,))
         position += 1
 
-    print(out)
-    join_intervals(out, base)
+    all_peaks = join_intervals(out, base)
 
+    if len(all_peaks) == 0:
+        print("no peaks")
+        return
 
-        # if len(peaks) < 2:
-        #     #neco nekam pridat?
-        #     print(peaks)
-        #     continue
-        # for i in range(3):
-        #     # co kdyz je kratsi nez 3
-        #     maximum = max(peaks, key=lambda item: item[0])
-        #     index = peaks.index(maximum)
-        #     print(maximum, index)
-        #     del peaks[index]
-        #     left = peaks[index-1]  # co kdyz je prvni
-        #     right = peaks[index+1]  # co kdyz je posledni
-        #     print(left, right)
-        #     print()
-        #     if maximum[1] + 1 == right[1]:
-        #         del peaks[index+1]
-        #     if maximum[1] - 1 == left[1]:
-        #         del peaks[index-1]
+    interval_tuples = list(set([x[1] for x in all_peaks]))
+    #interval_tuples.sort(key=lambda tup: tup[0])
+    interval_tuples = sorted(interval_tuples)
 
-    #     mean = np.mean([np.abs(x) for x in fft])
-    #     peaks = []
-    #
-    #     for j in range(len(fft)):
-    #         freq = np.abs(fft[j])
-    #         if mean*20 <= freq:
-    #             peaks.append(j)
-    #
-    #     if len(peaks) > 0:
-    #         mins.append(min(peaks))
-    #         maxs.append(max(peaks))
-    #
-    # wav.close()
-    # if len(mins) == 0:
-    #     print("no peaks")
-    #     return
-    # else:
-    #     print("low = ", min(mins), " high = ", max(maxs))
-    #     return
+    for interval in interval_tuples:
+        tones = [x[0] for x in all_peaks if interval in x]
+        print(interval[0], "-", interval[1], end=' ')
+        for tone in tones:
+            print(tone, end=' ')
+        print()
+
+    wav.close()
+    return
 
 
 main()
