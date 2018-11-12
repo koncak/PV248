@@ -18,9 +18,7 @@ def find_note(frequency, base):
 
     cents, _ = math.modf(n)
     cents = int(cents * 100)
-    #print(cents)
 
-    # cents = int(100 * (n % 1))
     if cents < 0:
         pitch += 1
 
@@ -36,7 +34,6 @@ def find_note(frequency, base):
         pitch -= 12
         octave += 1
 
-    #print(pitch, octave)
     out = names[pitch]
 
     if octave >= 0:
@@ -50,23 +47,8 @@ def find_note(frequency, base):
     return out, cents
 
 
-#print(find_note(115, 440))
-
-def peak_print(range, notes):
-    """
-
-    :param range: tuple, from where to where are peaks valid
-    :param notes: list of tuples, up to threee notes with cents (note, cents)
-    :return:
-    """
-
-
 def join_intervals(intervals, base):
     # DODGY SHIT
-    # for x in intervals:
-    #     notes = find_note(x[0], 440)
-    #     print(str(x[1]/10)+"-"+ str((x[1]+1)/10) + notes[0]  + str(notes[1]) )
-
     unique_peaks = set([x[0] for x in intervals])
     all_peaks = []
     for peak in unique_peaks:
@@ -85,11 +67,11 @@ def join_intervals(intervals, base):
     return all_peaks
 
 
-# join_intervals([(10000, 0), (10000, 1), (10000, 2), (10000, 3), (10000, 4), (10000, 5), (10000, 6), (10000, 7), (10000, 8), (10000, 9), (10000, 10), (10000, 11), (10000, 12), (10000, 13), (10000, 14), (10000, 15), (10000, 16), (10000, 17), (10000, 18), (10000, 19), (10000, 20), (9998, 20), (10003, 20)]
-# , 440)
-
-
 def main():
+    #0.0 - 3.6 c’+2
+    #0.6 - 0.9 g’’+4  or  0.6 - 0.9 g’’+4 c’+2
+    # order tones on output
+
     base = int(sys.argv[1])
     filename = sys.argv[2]
 
@@ -136,8 +118,6 @@ def main():
             #doresit, kdyz je maximum na prvnim indexu a na poslednim
 
             index = peaks.index(maximum)
-            # left = peaks[index - 1]
-            # right = peaks[index + 1]
             del peaks[index-1:index+2]
             if maximum != (-1, -1):
                 local_out.append((maximum[1],))
@@ -156,9 +136,14 @@ def main():
     interval_tuples = sorted(interval_tuples)
 
     for interval in interval_tuples:
-        tones = [x[0] for x in all_peaks if interval in x]
+        # tones = [x[0] for x in all_peaks if interval in x]
+        tones = []
+        for peak in all_peaks:
+            if peak[1][0] <= interval[0] and peak[1][1] >= interval[1]:
+                tones.append(peak[0])  # pridava stejne tony to jinych intervalu, staci set?
+
         print(interval[0], "-", interval[1], end=' ')
-        for tone in tones:
+        for tone in set(tones):  # set je unordered, potrebuji setridit podle frekvence
             print(tone, end=' ')
         print()
 
