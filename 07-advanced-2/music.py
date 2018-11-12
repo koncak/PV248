@@ -28,7 +28,7 @@ def find_note(frequency, base):
 
     if cents >= 50:
         pitch += 1
-        cents = 100 - cents
+        cents = cents - 100
 
     if pitch >= 12:
         pitch -= 12
@@ -43,14 +43,13 @@ def find_note(frequency, base):
         octave += 1
         out = out + (',' * -octave)
 
-    # +1 / -1 cent, resit?
     return out, cents
 
 
 def join_intervals(intervals, base):
-    # DODGY SHIT
     unique_peaks = set([x[0] for x in intervals])
     all_peaks = []
+
     for peak in unique_peaks:
         occurrence = [x[1] for x in intervals if x[0] == peak]
 
@@ -62,15 +61,19 @@ def join_intervals(intervals, base):
                 cents = "-"
             else:
                 cents = "+"
+
             note_out = str(note[0] + cents + str(abs(note[1])))
-            all_peaks.append((note_out, (ranges[0]/10, (ranges[-1]+1)/10)))
+            all_peaks.append((note_out, (ranges[0]/10, (ranges[-1]+1)/10), peak))
+
     return all_peaks
 
 
 def main():
-    #0.0 - 3.6 c’+2
-    #0.6 - 0.9 g’’+4  or  0.6 - 0.9 g’’+4 c’+2
-    # order tones on output
+    # 0.0 - 0.7 C - 37 C + 16 g + 0
+    # 0.0 - 2.3 g + 0 ------ ???
+    # 0.7 - 1.1 C - 10 C + 42 g + 0
+    # 1.1 - 1.9 C - 37 C + 16 g + 0
+    # 1.9 - 2.3 C - 10 C + 42 g + 0
 
     base = int(sys.argv[1])
     filename = sys.argv[2]
@@ -115,12 +118,19 @@ def main():
         local_out = []
         for _ in range(3):
             maximum = max(peaks, key=lambda item: item[0])
-            #doresit, kdyz je maximum na prvnim indexu a na poslednim
 
             index = peaks.index(maximum)
-            del peaks[index-1:index+2]
+            left = index - 1
+            right = index + 2
+            if index == 0:
+                left = index
+            if index == len(peaks):
+                right = index + 1
+
+            del peaks[left:right]
             if maximum != (-1, -1):
                 local_out.append((maximum[1],))
+
         for x in local_out:
             out.append(x+(position,))
         position += 1
@@ -132,19 +142,24 @@ def main():
         return
 
     interval_tuples = list(set([x[1] for x in all_peaks]))
-    #interval_tuples.sort(key=lambda tup: tup[0])
     interval_tuples = sorted(interval_tuples)
 
     for interval in interval_tuples:
-        # tones = [x[0] for x in all_peaks if interval in x]
         tones = []
         for peak in all_peaks:
             if peak[1][0] <= interval[0] and peak[1][1] >= interval[1]:
-                tones.append(peak[0])  # pridava stejne tony to jinych intervalu, staci set?
+                tones.append((peak[0], peak[2]))
+
+        tones.sort(key=lambda tup: tup[1])
+        out = []
+        for tone in tones:
+            if tone[0] not in [o[0] for o in out]:
+                out.append(tone)
+        out.sort(key=lambda tup: tup[1])
 
         print(interval[0], "-", interval[1], end=' ')
-        for tone in set(tones):  # set je unordered, potrebuji setridit podle frekvence
-            print(tone, end=' ')
+        for tone in out:
+            print(tone[0], end=' ')
         print()
 
     wav.close()
