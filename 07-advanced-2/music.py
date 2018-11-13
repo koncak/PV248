@@ -17,6 +17,7 @@ def find_note(frequency, base):
     pitch = int(n % 12)
 
     cents, _ = math.modf(n)
+    cents = float("{0:.2f}".format(cents))
     cents = int(cents * 100)
 
     if cents < 0:
@@ -136,7 +137,6 @@ def main():
         position += 1
 
     all_peaks = join_intervals(out, base)
-
     if len(all_peaks) == 0:
         print("no peaks")
         return
