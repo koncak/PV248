@@ -5,6 +5,19 @@ import struct
 from math import log2, pow
 
 
+def print_help(pitches_in_windows, i):
+    print("{0:.2f}".format(0.1 * (i + 1)), sep='', end=' ')
+    if len(pitches_in_windows[i - 1]) == 0:
+        print("no peaks")
+    else:
+        for k, v in pitches_in_windows[i - 1].items():
+            if int(v) >= 0:
+                print(k, "+", v, sep='', end=' ')
+            else:
+                print(k, v, sep='', end=' ')
+    print("\n", sep='', end='')
+
+
 def output(a1, maxs_in_windows):
     started = False
     pitches_in_windows = []
@@ -39,29 +52,11 @@ def output(a1, maxs_in_windows):
                             pitches_in_windows[i][k] = max(v, pitches_in_windows[i][k])
                 else:
                     started = False
-                    print("{0:.2f}".format(0.1 * (i + 1)), sep='', end=' ')
-                    if len(pitches_in_windows[i - 1]) == 0:
-                        print("no peaks")
-                    else:
-                        for k, v in pitches_in_windows[i - 1].items():
-                            if int(v) >= 0:
-                                print(k, "+", v, sep='', end=' ')
-                            else:
-                                print(k, v, sep='', end=' ')
-                    print("\n", sep='', end='')
+                    print_help(pitches_in_windows, i)
 
             else:
                 started = False
-                print("{0:.2f}".format(0.1 * (i + 1)), sep='', end=' ')
-                if len(pitches_in_windows[i - 1]) == 0:
-                    print("no peaks")
-                else:
-                    for k, v in pitches_in_windows[i - 1].items():
-                        if int(v) >= 0:
-                            print(k, "+", v, sep='', end=' ')
-                        else:
-                            print(k, v, sep='', end=' ')
-                print("\n", sep='', end='')
+                print_help(pitches_in_windows, i)
 
     if started:
         print("{0:.2f}".format(0.1 * (i + 1)), sep='', end=' ')
