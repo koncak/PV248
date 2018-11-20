@@ -67,7 +67,6 @@ def stats(df):
         date_16 = "inf"
         date_20 = "inf"
     else:
-        print(16/regression)
         date_16 = '{:%Y-%m-%d}'.format(start + timedelta(days=math.floor(16 / regression)))
         date_20 = '{:%Y-%m-%d}'.format(start + timedelta(days=math.floor(20 / regression)))
 
