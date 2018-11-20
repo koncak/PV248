@@ -1,5 +1,4 @@
 import sys
-import numpy as np
 import pandas as pd
 import json
 import re
@@ -30,6 +29,7 @@ def exercise(df):
                     "last": df[ex].quantile(.75),
                     "passed": int(df[ex].astype(bool).sum(axis=0))}
         deadlines[ex] = deadline
+    # print(df)
 
     od = collections.OrderedDict(sorted(deadlines.items()))
     json.dump(od, sys.stdout, indent=4, ensure_ascii=False)

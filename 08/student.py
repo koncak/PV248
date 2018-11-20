@@ -6,7 +6,6 @@ from scipy import stats
 import re
 import math
 from datetime import datetime, timedelta
-import matplotlib.pyplot as plt
 
 
 def stats(df):
