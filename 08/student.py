@@ -6,6 +6,7 @@ from scipy import stats
 import re
 import math
 from datetime import datetime, timedelta
+import matplotlib.pyplot as plt
 
 
 def stats(df):
@@ -48,8 +49,11 @@ def stats(df):
     cum_dates = [(datetime.strptime(x, '%Y-%m-%d')-start).days for x in cum_dates]
     cum_values = [item for sublist in cum_values for item in sublist]
 
-    x = [0] + cum_dates
-    y = [0] + cum_values
+    # x = [0] + cum_dates
+    # y = [0] + cum_values
+
+    x = cum_dates
+    y = cum_values
 
     x = np.array(x)
     y = np.array(y)
@@ -63,8 +67,9 @@ def stats(df):
         date_16 = "inf"
         date_20 = "inf"
     else:
-        date_16 = '{:%Y-%m-%d}'.format(start + timedelta(days=math.ceil(16 / regression)))
-        date_20 = '{:%Y-%m-%d}'.format(start + timedelta(days=math.ceil(20 / regression)))
+        print(16/regression)
+        date_16 = '{:%Y-%m-%d}'.format(start + timedelta(days=math.floor(16 / regression)))
+        date_20 = '{:%Y-%m-%d}'.format(start + timedelta(days=math.floor(20 / regression)))
 
     exercises = sorted(list(exercises))
     for ex in exercises:
