@@ -96,23 +96,26 @@ def main():
             for voice in voices:
                 voice_string = ""
 
+                ranges = None
                 if voice[-2]:
-                    voice_string += voice[-2]
-                    voice_string += ", "
+                    ranges = voice[-2]
 
                 if voice[-1]:
                     voice_string += voice[-1]
 
                 if voice[-4] == 1:
                     first_voice = True
-                out_voices.append((voice[-4], voice_string))
+                out_voices.append((voice[-4], voice_string, ranges))
 
             if not first_voice:
-                out_voices.append((1, None))
+                out_voices.append((1, None, None))
 
             sorted_voices = sorted(list(set(out_voices)), key=lambda tup: tup[0])
             for out_voice in sorted_voices:
-                out["Voice " + str(out_voice[0])] = out_voice[1]
+                names = {}
+                names['name'] = out_voice[1]
+                names['range'] = out_voice[2]
+                out["Voice " + str(out_voice[0])] = names
 
             out["Partiture"] = "Yes" if r[5] == "Y" else "No"
             out["Incipit"] = r[11]
