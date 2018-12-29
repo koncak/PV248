@@ -51,17 +51,17 @@ async def waiting(session, game_id, player):
 
         elif "winner" in json_data:
             if int(json_data["winner"]) == player:
-                print("Vyhravas")
+                print("you win")
 
             elif int(json_data["winner"]) == 0:
-                print("Remiza")
+                print("draw")
 
             else:
-                print("Prohravas")
+                print("you lose")
             exit(0)
 
         if player_waiting:
-            print("Cekam na druheho hrace")
+            print("waiting for the other player")
             player_waiting = False
 
         sleep(1)
@@ -94,7 +94,7 @@ async def play(session, game_id, player):
 
     while True:
         next_player = "x" if player == 1 else "o"
-        print("Jsi na tahu ({}):".format(next_player))
+        print("your turn ({}):".format(next_player))
 
         player_move = input()
         player_move = player_move.strip()
@@ -108,7 +108,7 @@ async def play(session, game_id, player):
                 first = int(first)
                 second = int(second)
             except:
-                print("Neplatny tah!")
+                print("invalid input")
                 continue
 
             response = await fetch(session, 'http://' + str(sys.argv[1]) + ":" + str(sys.argv[2]) +
@@ -120,7 +120,7 @@ async def play(session, game_id, player):
                 if not json_data["status"] == "bad":
                     break
 
-        print("Neplatny tah!")
+        print("invalid input")
 
     await waiting(session, game_id, player)
 
