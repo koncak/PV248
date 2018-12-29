@@ -10,8 +10,8 @@ def main():
     c = conn.cursor()
     c.execute('SELECT * FROM person p WHERE p.name LIKE ? ORDER BY p.name ASC', ("%"+name+"%",))
     authors = c.fetchall()
+    author_dict = {}
     for author in authors:
-        author_dict = {}
         author_dict[author[-1]] = []
         author_id = author[0]
         c = conn.cursor()
@@ -121,7 +121,7 @@ def main():
             out["Incipit"] = r[11]
             author_dict[author[-1]].append(out)
 
-        json.dump(author_dict, sys.stdout, indent=4, ensure_ascii=False)
+    json.dump(author_dict, sys.stdout, indent=4, ensure_ascii=False)
 
     c.close()
     conn.close()
