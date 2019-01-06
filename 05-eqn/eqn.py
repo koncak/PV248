@@ -27,6 +27,7 @@ def get_tuples(left_side):
     """
     groups = []
     left_side = left_side.strip()
+
     def split_left(value):
         if " " not in value:
             groups.append(value)
@@ -100,21 +101,26 @@ def main():
     augumented_rank = np.linalg.matrix_rank(augumented)
 
     if not left_rank == augumented_rank:
-        print("NO SOLUTION")
+        print("no solution")
         return
 
     unknowns = len(lefts[0])  # they all have the same dimension
 
     if unknowns == left_rank:
         solution = np.linalg.solve(lefts, rights)
-        print("Unique solution: ", end="")
+        print("solution: ", end="")
+        first = False
         for i in range(len(solution)):
-            print(letters[i] + "=" + str(solution[i]), end=" ")
+            if not first:
+                print(letters[i] + " = " + str(solution[i]), end="")
+                first = True
+            else:
+                print(', ' + letters[i] + " = " + str(solution[i]), end="")
 
         print()
         return
     else:
-        print("Multiple solutions, solution space dimension:", unknowns - left_rank)
+        print("solution space dimension:", unknowns - left_rank)
         return
 
 
