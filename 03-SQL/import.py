@@ -31,10 +31,10 @@ def store_voice(cursor, voice, score_id):
                    (voice.name, voice.range, voice.number, score_id))
 
 
-def store_score(cursor, score):
+def store_score(cursor, score):  # STALE NEOPRAVENO - 04-memory python3 ./search.py 'haydn'
     cursor.execute("SELECT * FROM score WHERE name=?"
-                   " AND genre=? "
-                   "AND key = ? AND "
+                   " AND (genre=? or genre is null)"
+                   "AND (key = ? or key is null) AND "
                    "(incipit = ? or incipit is null) AND "
                    "(year = ? or year is null)",
                    (score.name, score.genre, score.key, score.incipit, score.year))
