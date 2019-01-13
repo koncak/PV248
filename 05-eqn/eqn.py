@@ -32,7 +32,7 @@ def get_tuples(left_side):
         if " " not in value:
             groups.append(value)
             return
-        out = re.match("(.*) (\+|-) (.*)", value)
+        out = re.match("(.*) (\+|-)[\s]*(.*)", value)
         if out is None:
             return
         else:
