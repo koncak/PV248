@@ -1,7 +1,7 @@
 import http.server
 import json
 import urllib.request
-from urllib.error import HTTPError, URLError
+from urllib.error import HTTPError
 import socket
 import sys
 
